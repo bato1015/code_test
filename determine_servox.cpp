@@ -22,16 +22,16 @@ int main()
 }
 
 /*サーボの標準エラーを検出し、エラー内容を書き込む*/
-void servoErrorstandardCheckCommand(char servoID, unsigned char readbuf)
+void servoErrorstandardCheckCommand(int servoID, unsigned char readbuf)
 {
+    unsigned char sendbuf;
     std::ofstream write;
     std::string filename = "sample.txt";
     write.open(filename, std::ios::app);
 
-    unsigned char sendbuf;
-    std::string s;
     std::stringstream ss;
     std::vector<std::string> error_list = {"system_error", "motor_error", "UART_error", "command_error"};
+    unsigned char sendcommand[] = {0x01, 0x02, 0x03, 0x04, 0x05};
     //struct ServoStatus s;
     //std::cout << to_binString(readbuf) << "\n";
     if (readbuf != 0x99)
@@ -44,15 +44,21 @@ void servoErrorstandardCheckCommand(char servoID, unsigned char readbuf)
                 // std::cout << "test" << std::endl;
                 ss << "mode:" << i << " "
                    << "[" << servoID << "]" << error_list[i] << std::endl;
-                sendbuf = 0x93; //送って受け取る
-                std::cout << to_binString(sendbuf) << "\n";
+                sendbuf = 0x04; //送って受け取る
+                sendbuf = sendcommand[i];
+                //std::cout << to_binString(sendbuf) << "\n";
+
+                std::string s = ss.str();
+                const char *msg = s.c_str();
+                if (s.size() != 0)
+                {
+                    std::cout << msg;
+                    write << msg << std::endl;
+                    //syslog(LOG_DEBUG, "test");
+                }
                 servoErrorDetailCheckCommand(servoID, sendbuf, i);
             }
         }
-        std::string s = ss.str();
-        const char *msg = s.c_str();
-        write << msg << std::endl;
-        //syslog(LOG_DEBUG, "test");
     }
 }
 
@@ -63,7 +69,6 @@ void servoErrorDetailCheckCommand(int servoID, unsigned char readbuf, int re) //
     std::string filename = "sample.txt";
     write.open(filename, std::ios::app);
 
-    std::string s;
     std::stringstream ss;
     std::vector<std::vector<std::string>> error_detail_list = {
         {"Watchdog_Timer_error", "MCU_error", "Memory_error", "input_voltage_error", "MCU_temple_up", "AD_false", "I2C_false", "SPI_false"},
@@ -86,19 +91,22 @@ void servoErrorDetailCheckCommand(int servoID, unsigned char readbuf, int re) //
         }
         std::string s = ss.str();
         const char *msg = s.c_str();
-        write << s << std::endl;
-        //syslog(LOG_DEBUG, "test");
+        if (s.size() != 0)
+        {
+            write << s << std::endl;
+            //syslog(LOG_DEBUG, "test");
+        }
     }
 }
 
 /*すべてのサーボエラーを検出する*/
 void allErrorJuging()
 {
-    for (int i = 0; i < ACCELITE_SERV_NUM; i++)
+    for (int i = 1; i < ACCELITE_SERV_NUM + 1; i++)
     {
         unsigned char readbuf;
         //struct ServoStatus s;
-        readbuf = 0x0F; //送って受け取る
+        readbuf = 0x08; //送って受け取る
         std::cout << to_binString(readbuf) << "\n";
         servoErrorstandardCheckCommand(i, readbuf);
     }
