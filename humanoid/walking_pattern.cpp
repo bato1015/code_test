@@ -2,6 +2,8 @@
 #include <cmath>
 #include <fstream>
 
+//splot "data.dat" linespoints
+
 double Tsup = 0.8;         //周期
 double Sx = 0.3, Sy = 0.2; //歩幅
 double x = 0, y = 0, Px = 0, Py = 0, t = 0, Tc = 0, dx = 0, dy = 0, xvar = 0, yvar = 0, pPx, pPy, proPx = 0, proPy = 0;
@@ -38,7 +40,7 @@ double sss()
             // std::cout << S;
             x = (xi - proPx) * C + Tc * dxi * S + proPx;
             y = (yi - proPy) * C + Tc * dyi * S + proPy;
-            data << x << " " << y << std::endl;
+            data << t << " " << x << " " << y << std::endl;
 
             dx = (xi - proPx) / Tc * S + dxi * C;
             dy = (yi - proPy) / Tc * S + dyi * C;
