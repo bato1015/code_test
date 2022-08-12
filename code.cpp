@@ -91,7 +91,7 @@ int main(){
     }
 
     print_list();
-    delate_all(N);
+    //delate_all(N);
 delate_all1();
     print_list();
     return 0;
