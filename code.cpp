@@ -40,6 +40,7 @@ void print_list(){
     std::cout<<std::endl;
 }
 
+
 /*void print_list1(){
     int cnt=0;
     List *current=pre_list->next;
@@ -53,7 +54,7 @@ void print_list(){
 }*/
 
  void delete_node(List *node) {
-    if (node == pre_list) return;  // nodeが番兵の時は何もしない
+    //if (node == pre_list) return;  // nodeが番兵の時は何もしない
     // リンクつなぎ変え
     node->pre->next = node->next;
     node->next->pre = node->pre;
@@ -64,6 +65,14 @@ void delate_all(int N){
     for(int i=0;i<N;i++){
         delete_node(pre_list->pre);
     }
+    delete_node(pre_list);
+}
+
+//問題点としてnewに対してdeletaが適切におこなえているかわからない
+//delate_all1ではwhileがこ案ダンプする。
+void delate_all1(){
+    while(pre_list->pre==pre_list)
+        delete_node(pre_list);
 }
 void int_list_se(){
     pre_list=pre_list->pre;
@@ -83,6 +92,7 @@ int main(){
 
     print_list();
     delate_all(N);
-    //print_list();
+delate_all1();
+    print_list();
     return 0;
 }
